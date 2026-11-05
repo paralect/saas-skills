@@ -2,6 +2,14 @@
 
 Agent skills for shipping B2B SaaS: landing pages, dashboards, logos, share cards, demo videos and blog images. See the real output of each one at [paralect.com/skills](https://www.paralect.com/skills).
 
+## New: pulse-repo-stats
+
+See how any GitHub repo ships: release weeks, review wait, time to merge, unreviewed merges and how much of the work AI agents do, in one HTML file. The numbers stay on your computer.
+
+```bash
+npx skills add paralect/saas-skills --skill pulse-repo-stats
+```
+
 ## Install
 
 Pick from the list:

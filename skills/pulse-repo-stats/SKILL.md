@@ -31,6 +31,7 @@ Reads the last 12 weeks of a GitHub repo and writes the same dashboard as parale
 | `--out path.html` | Where to write it. Default: `~/pulse-repo-stats/<owner>-<repo>-<date>.html` |
 | `--no-open` | Don't open the browser. Use this on a machine with no display. |
 | `--no-pipeline` | Skip the "How code gets to production" section |
+| `--print-template` | Print the page's HTML, to customize it (see below) |
 
 ## When it fails
 
@@ -53,4 +54,8 @@ The page explains each one under "How we count". Three things come up often:
 
 ## Changing the page
 
-Everything visible is in `scripts/dashboard.html`: plain HTML, Tailwind classes and a little JavaScript, drawn from a JSON block the script fills in. To change the look, edit that file and run the script again.
+The page's plain HTML, Tailwind classes and a little JavaScript are built into the script. To change the look, save them next to it, edit that copy and run the script again; it uses `dashboard.html` when it finds one:
+
+```bash
+node <this-skill-folder>/scripts/pulse-repo-stats.mjs --print-template > <this-skill-folder>/scripts/dashboard.html
+```
