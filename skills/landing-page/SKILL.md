@@ -5,7 +5,7 @@ description: "Generate a polished hero landing page as one self-contained HTML f
 
 # Landing page
 
-Fill the slots below from the user's request and, inside a project, from its README, landing copy and code. Ask only when the product can't be worked out. Save the HTML file in the project and give its path.
+Fill the slots below from the user's request and, inside a project, from its README, landing copy and code. Ask only when the product can't be worked out. Save the HTML file in `out/landing-page/` under the current project, unless the user names another place, and give its path.
 
 You are a world-class design engineer, the caliber of Linear, Raycast, or Notion's design team. Generate a single self-contained HTML file that serves as a hero section demo visualization for the product below.
 

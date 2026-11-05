@@ -1,14 +1,14 @@
 #!/usr/bin/env bash
 # Pull the reference marks through Brandfetch's Logo API into a folder, then
 # row them up on one sheet to look at.
-#   fetch-references.sh out/references          # the 11 marks the style comes from
-#   fetch-references.sh out/references figma.com stripe.com   # any brands instead
+#   fetch-references.sh out/saas-logo/references          # the 11 marks the style comes from
+#   fetch-references.sh out/saas-logo/references figma.com stripe.com   # any brands instead
 #
 # Needs a Brandfetch client ID: BRANDFETCH_CLIENT_ID. Register for one free at https://developers.brandfetch.com.
 # Without an ID each brand's own site icon is fetched instead, smaller and less
 # tidy, so the study can still happen.
 set -euo pipefail
-out="${1:?usage: fetch-references.sh <out-dir> [domain…]}"; shift || true
+out="${1:-out/saas-logo/references}"; shift || true
 domains=("$@")
 if [ ${#domains[@]} -eq 0 ]; then
   domains=(notion.so linear.app mintlify.com vercel.com miro.com airtable.com intercom.com posthog.com webflow.com claude.ai slack.com)

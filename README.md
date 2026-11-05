@@ -60,12 +60,16 @@ npx skills add paralect/saas-skills --all --global
 | [article-image](https://www.paralect.com/skills/article-image) | The image that runs with a blog post, in one of 8 house styles |
 | [pulse-repo-stats](https://www.paralect.com/skills/pulse-repo-stats) | A one-file HTML dashboard of how a GitHub repo ships: release weeks, review wait, time to merge, AI agent share |
 
+## Where the output goes
+
+Everything a skill makes goes to `out/<skill-name>/` in your current project, unless you ask for another place.
+
 ## What some skills need
 
 | Skill | Needs |
 | --- | --- |
 | saas-logo | `OPENROUTER_API_KEY`, Python 3 (Pillow and NumPy install themselves on first run), `rsvg-convert` for contact sheets |
-| og-image, og-image-animated, og-image-live, website-scroll, product-demo | Node and Playwright with Chromium, or your own Chrome |
+| og-image, og-image-animated, og-image-live, website-screenshot-reel, website-scroll, product-demo | Node. Playwright installs into the skill's own folder on first run, with its Chromium if none is found |
 | og-image-animated, og-image-live, website-screenshot-reel, website-scroll, product-demo | `ffmpeg` |
 | pulse-repo-stats | Node 18+ and `gh auth login` or `GH_TOKEN`. Data stays on your computer |
 

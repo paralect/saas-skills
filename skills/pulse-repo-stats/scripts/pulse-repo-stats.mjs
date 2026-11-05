@@ -5,7 +5,6 @@
 // scripts/pulse-repo-stats/cli.ts
 import { execFileSync, spawn } from "node:child_process";
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
-import { homedir } from "node:os";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -1528,7 +1527,7 @@ Reads the last ${WINDOW_WEEKS} weeks of a GitHub repo and writes a one-file HTML
 With no repo, uses the "origin" remote of the current folder.
 
   --name "Acme"   Name in the page title (default: the repo's name)
-  --out file      Where to write it (default: ~/pulse-repo-stats/<owner>-<repo>-<date>.html)
+  --out file      Where to write it (default: out/pulse-repo-stats/<owner>-<repo>-<date>.html)
   --no-open       Don't open it in the browser
   --no-pipeline   Skip the branch rules and PR checks section
   --print-template  Print the page's HTML template. Save it as dashboard.html next to
@@ -1677,7 +1676,7 @@ async function main() {
   const json = JSON.stringify(data).replace(/</g, "\\u003c");
   const html = template.replace("__PULSE_TITLE__", () => `How ${escapeHtml(name)} ships`).replace("__PULSE_DATA__", () => json);
   const date = (/* @__PURE__ */ new Date()).toISOString().slice(0, 10);
-  const out = options.out ? resolve(options.out) : join(homedir(), "pulse-repo-stats", `${repos[0].fullName.replace("/", "-").toLowerCase()}-${date}.html`);
+  const out = options.out ? resolve(options.out) : resolve("out", "pulse-repo-stats", `${repos[0].fullName.replace("/", "-").toLowerCase()}-${date}.html`);
   mkdirSync(dirname(out), { recursive: true });
   writeFileSync(out, html);
   if (options.open) openInBrowser(out);

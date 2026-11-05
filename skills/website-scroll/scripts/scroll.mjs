@@ -3,7 +3,7 @@
 // scroll it (a flick of about a screen, a pause to look, another flick), with the cookie
 // banners, consent dialogs, newsletter popups and chat launchers out of the way.
 //
-//   node scroll.mjs --url https://example.com --out out/scroll/example
+//   node scroll.mjs --url https://example.com --out out/website-scroll/example
 //
 // Writes <out>.mp4 and <out>.jpg (the first frame, for a poster). Frames are captured one
 // by one (the page is scrolled by script and its clock advanced by exactly one frame each
@@ -30,13 +30,13 @@ import {
   existsSync,
   mkdirSync,
   mkdtempSync,
-  readdirSync,
   rmSync,
   copyFileSync,
 } from "node:fs";
 import { createRequire } from "node:module";
-import { homedir, tmpdir } from "node:os";
+import { tmpdir } from "node:os";
 import { dirname, join, resolve } from "node:path";
+import { fileURLToPath } from "node:url";
 
 const args = Object.fromEntries(
   process.argv.slice(2).reduce((pairs, token, i, all) => {
@@ -47,9 +47,9 @@ const args = Object.fromEntries(
   }, []),
 );
 
-if (!args.url || !args.out) {
+if (!args.url) {
   console.error(
-    "Usage: node scroll.mjs --url <https://…> --out <path/without-extension> [--width 1440 --height 900]",
+    "Usage: node scroll.mjs --url <https://…> [--out out/website-scroll/<page>] [--width 1440 --height 900]",
   );
   process.exit(1);
 }
@@ -69,42 +69,33 @@ const OUT_WIDTH = Number(args["out-width"] ?? 1280);
 const DARK = args.dark === "true";
 const KEEP = args["keep-frames"] === "true";
 const STILL = args.still === "true";
-const out = resolve(args.out.replace(/\.(mp4|jpg|jpeg|png)$/, ""));
+// Named after the page unless --out says otherwise: example.com/pricing -> example-com-pricing
+const pageName = args.url.replace(/^https?:\/\//, "").replace(/[^a-zA-Z0-9]+/g, "-").replace(/^-|-$/g, "").toLowerCase();
+const out = resolve((args.out ?? `out/website-scroll/${pageName}`).replace(/\.(mp4|jpg|jpeg|png)$/, ""));
 
 // ---- dependencies ------------------------------------------------------------
 
+// Playwright lives in this skill's own folder: installed next to this script on the first run,
+// never looked up in the project, the npx cache or anywhere else.
+const HERE = dirname(fileURLToPath(import.meta.url));
+
 function loadPlaywright() {
-  const candidates = [];
-  if (process.env.PLAYWRIGHT_CORE) candidates.push(process.env.PLAYWRIGHT_CORE);
-  candidates.push(join(process.cwd(), "node_modules", "playwright-core"));
-  candidates.push(join(process.cwd(), "node_modules", "playwright"));
-  const pnpm = join(process.cwd(), "node_modules", ".pnpm");
-  if (existsSync(pnpm)) {
-    for (const dir of readdirSync(pnpm)) {
-      if (dir.startsWith("playwright-core@")) {
-        candidates.push(join(pnpm, dir, "node_modules", "playwright-core"));
-      }
-    }
+  const path = join(HERE, "node_modules", "playwright");
+  if (!existsSync(path)) {
+    console.error("Installing Playwright into this skill's folder (first run)...");
+    execFileSync("npm", ["install", "--silent", "--no-audit", "--no-fund"], { cwd: HERE, stdio: ["ignore", 2, 2] });
   }
-  const npxCache = join(homedir(), ".npm", "_npx");
-  if (existsSync(npxCache)) {
-    for (const dir of readdirSync(npxCache)) {
-      candidates.push(join(npxCache, dir, "node_modules", "playwright-core"));
-    }
+  return createRequire(import.meta.url)(path);
+}
+
+// Downloads Playwright's Chromium the first time a launch can't find one.
+async function launchBrowser(chromium, options = {}) {
+  try {
+    return await chromium.launch(options);
+  } catch {
+    execFileSync(join(HERE, "node_modules", ".bin", "playwright"), ["install", "chromium"], { stdio: ["ignore", 2, 2] });
+    return chromium.launch(options);
   }
-  const require = createRequire(import.meta.url);
-  for (const path of candidates) {
-    if (!existsSync(path)) continue;
-    try {
-      const pw = require(path);
-      if (pw.chromium) return pw;
-    } catch {
-      // try the next one
-    }
-  }
-  throw new Error(
-    "playwright-core not found. Run `npx -y playwright@latest install chromium` and retry, or set PLAYWRIGHT_CORE.",
-  );
 }
 
 if (!STILL) {
@@ -138,7 +129,7 @@ const launchArgs = [
 // The user's Chrome when there is one, so nothing has to be downloaded.
 const browser = await chromium
   .launch({ channel: "chrome", headless: true, args: launchArgs })
-  .catch(() => chromium.launch({ headless: true, args: launchArgs }));
+  .catch(() => launchBrowser(chromium, { headless: true, args: launchArgs }));
 const ctx = await browser.newContext({
   viewport: { width: WIDTH, height: HEIGHT },
   deviceScaleFactor: SCALE,

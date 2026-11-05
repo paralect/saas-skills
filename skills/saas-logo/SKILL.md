@@ -5,6 +5,8 @@ description: "Generate a logo mark for a software product in the manner of Notio
 
 # SaaS logo
 
+Every file this skill uses ships in its own folder, next to this SKILL.md, and paths here are relative to that folder. It needs nothing from other skills or other folders, so don't go looking for them. Unless the user names another place, save everything it makes in `out/saas-logo/` under the current project.
+
 One symbol, flat. What comes back is the mark alone on a transparent
 background, trimmed to its edges, plus the same mark on its app-icon tile:
 files that drop straight into a site. The marks this skill draws from are studied in
@@ -100,7 +102,7 @@ geometry: flat ends, even weight, true flat fills.
 
 Row the tiles up with `bash <this skill folder>/scripts/sheet.sh sheet.png a.png b.png …` and
 open it. To see the references next to them, `bash <this skill folder>/scripts/fetch-references.sh
-out/references` pulls the eleven marks through Brandfetch into a sheet of
+out/saas-logo/references` pulls the eleven marks through Brandfetch into a sheet of
 their own (it needs a Brandfetch client ID; see the script's header). Judge
 each tile the way the analysis judges the references:
 
@@ -130,7 +132,7 @@ The render is a working file: a grey canvas with the tile on it. Cut every
 keeper into the files that get used:
 
 ```bash
-bash <this skill folder>/scripts/cut.sh <concept>.png <out-dir> --name <product>
+bash <this skill folder>/scripts/cut.sh <concept>.png out/saas-logo/<product> --name <product>
 ```
 
 It writes `<product>-mark.png`, the mark alone on a transparent background,
@@ -140,7 +142,7 @@ render's corners and the tile colour from a band inside the tile's edge, and
 edge pixels are unmixed from them, so the edges stay soft with no halo. When
 several concepts are delivered, name them apart (`--name relay-bars`,
 `--name relay-block`). The first run makes a small Python venv with Pillow
-and NumPy under `~/.cache/saas-logo`; after that it is instant.
+and NumPy in `scripts/.venv` inside this skill; after that it is instant.
 
 Open the two files over a dark and a light background and check: no fringe of
 tile colour along the mark's edge, no sliver of canvas at the tile's corners,
@@ -152,10 +154,10 @@ more with `google/gemini-3-pro-image`, which answers in PNG.
 
 ### 7. Deliver
 
-Put the mark and tile PNGs where the product keeps brand assets (`public/`,
-`brand/`, `assets/`), or `out/logo/<product>/` when there is no such place.
+Put the mark and tile PNGs in `out/saas-logo/<product>/`. Copy them to where the
+product keeps brand assets (`public/`, `brand/`, `assets/`) only when the user asks.
 Keep the renders and `sheet.png` out of the way, in a `renders/` folder next to
-them or in `out/`. In the summary name the recommended `-mark.png` and
+them. In the summary name the recommended `-mark.png` and
 `-tile.png` by path, say which concept you recommend in one line and why, and list the others as alternatives with their files.
 
 ## Generating through OpenRouter

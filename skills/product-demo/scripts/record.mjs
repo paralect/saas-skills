@@ -3,7 +3,7 @@
 // window on a wallpaper, a drawn cursor that glides, hovers and clicks like a hand would,
 // captured frame by frame at 2x and encoded to MP4.
 //
-//   node record.mjs --take videos/demos/run-modal.mjs --out out/social/run-modal
+//   node record.mjs --take out/product-demo/takes/run-modal.mjs --out out/product-demo/run-modal
 //
 // The take is a small module that scripts the cursor (see SKILL.md for the contract and
 // references/run-modal.mjs for a full example). Writes <out>.mp4 and <out>.png (poster).
@@ -28,13 +28,12 @@ import {
   existsSync,
   mkdirSync,
   mkdtempSync,
-  readdirSync,
   readFileSync,
   rmSync,
   writeFileSync,
 } from "node:fs";
 import { createRequire } from "node:module";
-import { homedir, tmpdir } from "node:os";
+import { tmpdir } from "node:os";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
 
@@ -47,9 +46,9 @@ const args = Object.fromEntries(
   }, []),
 );
 
-if (!args.take || (!args.out && args.still !== "true")) {
+if (!args.take) {
   console.error(
-    "Usage: node record.mjs --take <take.mjs> --out <path/without-extension> [--width 1200 --height 1200] [--still]",
+    "Usage: node record.mjs --take <take.mjs> [--out out/product-demo/<take name>] [--width 1200 --height 1200] [--still]",
   );
   process.exit(1);
 }
@@ -64,43 +63,33 @@ const OUT_WIDTH = Number(args["out-width"] ?? 1080);
 const FORMATS = new Set((args.formats ?? "mp4,png").split(","));
 const STILL = args.still === "true";
 const KEEP = args["keep-frames"] === "true";
-const out = resolve((args.out ?? "still").replace(/\.(mp4|png)$/, ""));
+const takeName = args.take.split("/").at(-1).replace(/\.m?js$/, "");
+const out = resolve((args.out ?? `out/product-demo/${takeName}`).replace(/\.(mp4|png)$/, ""));
 const here = dirname(fileURLToPath(import.meta.url));
 
 // ---- dependencies ------------------------------------------------------------
 
+// Playwright lives in this skill's own folder: installed next to this script on the first run,
+// never looked up in the project, the npx cache or anywhere else.
+const HERE = dirname(fileURLToPath(import.meta.url));
+
 function loadPlaywright() {
-  const candidates = [];
-  if (process.env.PLAYWRIGHT_CORE) candidates.push(process.env.PLAYWRIGHT_CORE);
-  candidates.push(join(process.cwd(), "node_modules", "playwright-core"));
-  candidates.push(join(process.cwd(), "node_modules", "playwright"));
-  const pnpm = join(process.cwd(), "node_modules", ".pnpm");
-  if (existsSync(pnpm)) {
-    for (const dir of readdirSync(pnpm)) {
-      if (dir.startsWith("playwright-core@")) {
-        candidates.push(join(pnpm, dir, "node_modules", "playwright-core"));
-      }
-    }
+  const path = join(HERE, "node_modules", "playwright");
+  if (!existsSync(path)) {
+    console.error("Installing Playwright into this skill's folder (first run)...");
+    execFileSync("npm", ["install", "--silent", "--no-audit", "--no-fund"], { cwd: HERE, stdio: ["ignore", 2, 2] });
   }
-  const npxCache = join(homedir(), ".npm", "_npx");
-  if (existsSync(npxCache)) {
-    for (const dir of readdirSync(npxCache)) {
-      candidates.push(join(npxCache, dir, "node_modules", "playwright-core"));
-    }
+  return createRequire(import.meta.url)(path);
+}
+
+// Downloads Playwright's Chromium the first time a launch can't find one.
+async function launchBrowser(chromium, options = {}) {
+  try {
+    return await chromium.launch(options);
+  } catch {
+    execFileSync(join(HERE, "node_modules", ".bin", "playwright"), ["install", "chromium"], { stdio: ["ignore", 2, 2] });
+    return chromium.launch(options);
   }
-  const require = createRequire(import.meta.url);
-  for (const path of candidates) {
-    if (!existsSync(path)) continue;
-    try {
-      const pw = require(path);
-      if (pw.chromium) return pw;
-    } catch {
-      // try the next one
-    }
-  }
-  throw new Error(
-    "playwright-core not found. Run `npx -y playwright@latest install chromium` and retry, or set PLAYWRIGHT_CORE.",
-  );
 }
 
 if (!STILL && FORMATS.has("mp4")) {
@@ -142,7 +131,7 @@ if (KEEP) {
 }
 
 const { chromium } = loadPlaywright();
-const browser = await chromium.launch({ args: ["--hide-scrollbars"] });
+const browser = await launchBrowser(chromium, { args: ["--hide-scrollbars"] });
 const ctx = await browser.newContext({
   viewport: { width: WIDTH, height: HEIGHT },
   deviceScaleFactor: SCALE,

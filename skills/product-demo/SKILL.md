@@ -5,6 +5,8 @@ description: "Record a short, polished product demo video of the running app for
 
 # Video demo
 
+Every file this skill uses ships in its own folder, next to this SKILL.md, and paths here are relative to that folder. It needs nothing from other skills or other folders, so don't go looking for them. Unless the user names another place, save everything it makes in `out/product-demo/` under the current project.
+
 Output: a **10–40 second MP4** (square 1080×1080 by default) of the real app being used, plus a poster PNG. Nothing is faked: the recorder drives the actual running app with a real mouse and keyboard; only the cursor, the window chrome and the wallpaper are drawn.
 
 Example: `references/run-modal-frame.jpg`, a frame from a take of Paralect Agent in `references/run-modal.mjs` (open the Run modal, click each category on the left, hover the cards in it, 30s).
@@ -33,7 +35,7 @@ CSS transitions are slowed to the per-frame capture cost, so hover states and di
 
 ### 2. Write the take
 
-`videos/demos/<name>.mjs` in the project (create the folder):
+`out/product-demo/takes/<name>.mjs` in the project (create the folder):
 
 ```js
 export const url = "http://localhost:3000/app/page";   // the page to record
@@ -93,7 +95,7 @@ Pacing that reads well: 500ms before the first move; the first click ~1.5s in; 3
 ### 3. Check the framing
 
 ```bash
-node <this skill folder>/scripts/record.mjs --take videos/demos/<name>.mjs --out out/social/<name> --still
+node <this skill folder>/scripts/record.mjs --take out/product-demo/takes/<name>.mjs --out out/product-demo/<name> --still
 ```
 
 Look at `<out>.png`: the window filled with the app, the thing to demo readable, the cursor shape right (hand over clickable things). Adjust `--width/--height/--pad`, the URL, the `css`, or the selectors before spending minutes on a take.
@@ -102,17 +104,17 @@ Look at `<out>.png`: the window filled with the app, the thing to demo readable,
 
 ```bash
 DEMO_EMAIL=… DEMO_PASSWORD=… node <this skill folder>/scripts/record.mjs \
-  --take videos/demos/<name>.mjs --out out/social/<name>
+  --take out/product-demo/takes/<name>.mjs --out out/product-demo/<name>
 ```
 
 A 30s take at 2x takes ~8–10 minutes (each frame is a full 2x screenshot). Run it in the background and keep working. Options: `--width 1200 --height 1200`, `--pad 40` (0 = no window chrome), `--wallpaper warm|cool|dark|plain`, `--fps 30`, `--out-width 1080`, `--seed 1`, `--keep-frames`.
 
-Needs ffmpeg and a Playwright Chromium (resolved from the project's `node_modules`, `PLAYWRIGHT_CORE`, or the npx cache; otherwise `npx -y playwright@latest install chromium`).
+Needs ffmpeg. Playwright installs into this skill's `scripts/` folder on the first run, with its Chromium if none is found.
 
 ### 5. Review
 
 ```bash
-ffmpeg -y -loglevel error -i out/social/<name>.mp4 \
+ffmpeg -y -loglevel error -i out/product-demo/<name>.mp4 \
   -vf "select='not(mod(n\,40))',scale=300:-1,tile=8x3" -frames:v 1 sheet.png
 ```
 
@@ -128,7 +130,7 @@ Look at the sheet and at a few full frames around a click (`-vf "select='eq(n\,4
 
 Tell the user:
 
-- the files: `out/social/<name>.mp4` (size, duration) and `out/social/<name>.png`
+- the files: `out/product-demo/<name>.mp4` (size, duration) and `out/product-demo/<name>.png`
 - what the take shows, step by step, in a few lines
 - the take file and the exact command to re-render (with the env vars named, not their values)
 - anything presentation-only that was injected (pinned heights, hidden banners)

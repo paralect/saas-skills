@@ -5,6 +5,8 @@ description: "Create a crisp animated GIF, MOV or MP4 slideshow of website hero 
 
 # Website Screenshot Reel
 
+Every file this skill uses ships in its own folder, next to this SKILL.md, and paths here are relative to that folder. It needs nothing from other skills or other folders, so don't go looking for them. Unless the user names another place, save everything it makes in `out/website-screenshot-reel/` under the current project.
+
 Turns a list of websites into a high-quality GIF or MOV with one slide per site's hero section.
 
 ## Defaults
@@ -15,19 +17,19 @@ Turns a list of websites into a high-quality GIF or MOV with one slide per site'
 
 ## Steps
 
-1. Collect the URLs (add `https://` if missing) and the output format. Default to GIF unless the user asks for a video (`.mov` / `.mp4`). Save output in the current working directory unless told otherwise.
+1. Collect the URLs (add `https://` if missing) and the output format. Default to GIF unless the user asks for a video (`.mov` / `.mp4`). Save output in `out/website-screenshot-reel/` unless told otherwise.
 2. Run the script (it installs Playwright on first run; needs `ffmpeg` on PATH — `brew install ffmpeg` if missing):
 
    ```bash
    node <this skill folder>/scripts/reel.mjs \
-     --out hero-sections.gif --shots hero-screenshots \
+     --out out/website-screenshot-reel/hero-sections.gif --shots out/website-screenshot-reel/hero-screenshots \
      https://example.com https://another.com
    ```
 
    Options:
    | Flag | Default | Meaning |
    |---|---|---|
-   | `--out` | `reel.gif` | Output file; `.gif`, `.mov` or `.mp4` |
+   | `--out` | `out/website-screenshot-reel/reel.gif` | Output file; `.gif`, `.mov` or `.mp4` |
    | `--duration` | `1` | Seconds per slide |
    | `--width` / `--height` | `1440` / `900` | Browser viewport (CSS px) |
    | `--scale` | `2` | Device pixel ratio (2 = Retina-sharp) |

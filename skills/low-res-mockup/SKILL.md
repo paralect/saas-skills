@@ -5,7 +5,7 @@ description: "Generate a stripped-back HTML mockup of a screen, with grey blocks
 
 # Low-res mockup
 
-Fill the slots below from the user's request and, inside a project, from its README, landing copy and code. Ask only when the product can't be worked out. Save the HTML file in the project and give its path.
+Fill the slots below from the user's request and, inside a project, from its README, landing copy and code. Ask only when the product can't be worked out. Save the HTML file in `out/low-res-mockup/` under the current project, unless the user names another place, and give its path.
 
 Generate a single self-contained HTML file: a low detail mockup of the screen below. Grey blocks and skeleton bars, no readable copy. It is the thing you sketch before anyone argues about wording.
 

@@ -5,6 +5,8 @@ description: "Build the Pulse engineering dashboard for a GitHub repo on this co
 
 # Pulse repo stats
 
+Every file this skill uses ships in its own folder, next to this SKILL.md, and paths here are relative to that folder. It needs nothing from other skills or other folders, so don't go looking for them. Unless the user names another place, save everything it makes in `out/pulse-repo-stats/` under the current project.
+
 Reads the last 12 weeks of a GitHub repo and writes the same dashboard as paralect.ai/repo/vercel/next.js as one HTML file. It installs nothing. The numbers stay on this computer: the script talks only to api.github.com, and the page loads Tailwind and fonts from public CDNs and avatars from GitHub.
 
 ## Steps
@@ -28,7 +30,7 @@ Reads the last 12 weeks of a GitHub repo and writes the same dashboard as parale
 | Option | What it does |
 | --- | --- |
 | `--name "Acme"` | Name in the page title |
-| `--out path.html` | Where to write it. Default: `~/pulse-repo-stats/<owner>-<repo>-<date>.html` |
+| `--out path.html` | Where to write it. Default: `out/pulse-repo-stats/<owner>-<repo>-<date>.html` |
 | `--no-open` | Don't open the browser. Use this on a machine with no display. |
 | `--no-pipeline` | Skip the "How code gets to production" section |
 | `--print-template` | Print the page's HTML, to customize it (see below) |

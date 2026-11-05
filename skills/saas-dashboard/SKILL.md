@@ -5,7 +5,7 @@ description: "Generate a single self-contained HTML dashboard that looks like a 
 
 # SaaS dashboard
 
-Fill the slots below from the user's request and, inside a project, from its README, landing copy and code. Ask only when the product can't be worked out. Save the HTML file in the project and give its path.
+Fill the slots below from the user's request and, inside a project, from its README, landing copy and code. Ask only when the product can't be worked out. Save the HTML file in `out/saas-dashboard/` under the current project, unless the user names another place, and give its path.
 
 You are a senior design engineer who has shipped products at Linear, Attio, and Notion. Take the product description below and produce a single, self-contained HTML file that looks like a real product, something a founder can screenshot for a pitch deck, show investors on a call, or use to validate the idea with early customers.
 

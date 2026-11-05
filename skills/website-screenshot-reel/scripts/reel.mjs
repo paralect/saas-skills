@@ -9,7 +9,7 @@ import { fileURLToPath } from 'node:url';
 
 const HERE = dirname(fileURLToPath(import.meta.url));
 const args = process.argv.slice(2);
-const opt = { out: 'reel.gif', duration: 1, width: 1440, height: 900, scale: 2, wait: 12, outWidth: 0, fps: 30, shots: '', only: false };
+const opt = { out: 'out/website-screenshot-reel/reel.gif', duration: 1, width: 1440, height: 900, scale: 2, wait: 12, outWidth: 0, fps: 30, shots: '', only: false };
 const urls = [];
 for (let i = 0; i < args.length; i++) {
   const a = args[i];
@@ -29,6 +29,7 @@ for (let i = 0; i < args.length; i++) {
 if (!urls.length) { console.error('No URLs given'); process.exit(1); }
 
 const out = resolve(opt.out);
+mkdirSync(dirname(out), { recursive: true });
 const ext = extname(out).toLowerCase();
 if (!['.gif', '.mov', '.mp4'].includes(ext)) { console.error('--out must end in .gif, .mov or .mp4'); process.exit(1); }
 

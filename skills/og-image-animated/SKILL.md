@@ -5,7 +5,9 @@ description: "Turn a project's Open Graph share card into a few-second web anima
 
 # Animated OG image
 
-The static share card (see the `og-image` skill) animated as a short, calm reveal:
+Every file this skill uses ships in its own folder, next to this SKILL.md, and paths here are relative to that folder. It needs nothing from other skills or other folders, so don't go looking for them. Unless the user names another place, save everything it makes in `out/og-image-animated/` under the current project.
+
+The static share card animated as a short, calm reveal:
 
 1. Empty card: background and soft glow only.
 2. **Brand mark and title drop in from the top** (fade + slide down).
@@ -16,7 +18,7 @@ Examples: `references/pulse.gif` (the result) and `references/pulse-frames.png` 
 
 ## Rules
 
-- **Start from the static card.** If the project has no OG card component yet, build it first with the `og-image` skill (real product, messaging from the current site, realistic data). The animation adds motion only: same markup, same final layout, no new content.
+- **Start from the static card.** If the project has no OG card component yet, build it first by following `references/static-card.md` (real product, messaging from the current site, realistic data). The animation adds motion only: same markup, same final layout, no new content.
 - **One component, two modes.** Add an `animated` prop to the existing card component instead of copying it, so the static PNG and the animation never drift apart. Without the prop, nothing animates.
 - **Motion, not effects.** Only `opacity` + `transform: translateY`, one shared ease-out curve (`cubic-bezier(0.16, 1, 0.3, 1)`). No bounce, blur, scale pops, typewriter text or rotating elements.
 - **Short.** Whole timeline about 2–2.5s, then a ~1.5s hold. The title must be fully readable by ~1.3s.
@@ -76,12 +78,12 @@ With the dev server running:
 ```bash
 node <this skill folder>/scripts/record.mjs \
   --url "http://localhost:<port>/og/<page>-animated?loop=0" \
-  --out <app>/public/og-<page>
+  --out out/og-image-animated/og-<page>
 ```
 
 Writes `og-<page>.mp4` (2400×1260, H.264, 30fps), `og-<page>.gif` (1200px wide, palette-optimized, loops) and `og-<page>.png` (final frame). How it works: it pauses every animation on the page, reads the timeline length, then seeks all animations frame by frame and screenshots a fixed clip of `[data-og-frame]`. The result is identical on every run, with no dropped frames. Options: `--fps`, `--hold`, `--lead`, `--scale`, `--formats mp4,gif,png`, `--selector`.
 
-Needs `ffmpeg` on PATH and a Playwright Chromium (resolved from the project, `PLAYWRIGHT_CORE`, or the npx cache; otherwise `npx -y playwright@latest install chromium`).
+Needs `ffmpeg` on PATH. Playwright installs into this skill's `scripts/` folder on the first run, with its Chromium if none is found.
 
 Gotchas:
 
@@ -104,10 +106,6 @@ ffmpeg -y -loglevel error -i og-<page>.mp4 \
 - Last frame: identical in content to the static PNG.
 
 Keep the GIF reasonably small (under ~3MB). If it's bigger, lower `--fps` (20–24) or shorten `--hold`.
-
-## Related
-
-To animate the product *inside* the app window (events arriving, grids filling, statuses changing), use the `og-image-live` skill.
 
 ## Output
 

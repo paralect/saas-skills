@@ -5,6 +5,8 @@ description: "Generate an Open Graph / social share image (og:image, Twitter car
 
 # OG image
 
+Every file this skill uses ships in its own folder, next to this SKILL.md, and paths here are relative to that folder. It needs nothing from other skills or other folders, so don't go looking for them. Unless the user names another place, save everything it makes in `out/og-image/` under the current project.
+
 A share card sells the product in the half second someone scrolls past a link. The formula: **brand mark, one short title, and the real product underneath**, cropped by the bottom edge. Nothing else.
 
 Reference style (see `references/`):
@@ -54,7 +56,7 @@ Start the dev server (or reuse one), then:
 ```bash
 node <this skill folder>/scripts/capture.mjs \
   --url http://localhost:<port>/og/<page> \
-  --out <app>/public/og-<page>.png
+  --out out/og-image/og-<page>.png
 ```
 
 It opens a 1200×630 viewport at 2x (→ **2400×1260**), prefers reduced motion, hides dev overlays (TanStack/Next/Vite/Astro devtools, toasters), waits for fonts, and screenshots `[data-og-frame]`. Use `--hide` for any other overlay and `--wait` if images load slowly.

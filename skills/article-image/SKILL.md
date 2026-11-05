@@ -5,7 +5,9 @@ description: "Turn a paragraph or headline from a blog post into the one image t
 
 # Article image
 
-Fill the slots below from the post and the user's request. When they don't name a style, pick the one that fits the post. Generate the image with the image model you have access to. If you have none, give the user the filled-in prompt to paste into one.
+Every file this skill uses ships in its own folder, next to this SKILL.md, and paths here are relative to that folder. It needs nothing from other skills or other folders, so don't go looking for them.
+
+Fill the slots below from the post and the user's request. When they don't name a style, pick the one that fits the post. Generate the image with the image model you have access to and save it in `out/article-image/` under the current project, unless the user names another place. If you have none, give the user the filled-in prompt to paste into one.
 
 ## Styles
 

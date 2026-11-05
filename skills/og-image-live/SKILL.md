@@ -5,6 +5,8 @@ description: "Make a ~5 second share video (MP4 + GIF) of any project's Open Gra
 
 # OG image, live
 
+Every file this skill uses ships in its own folder, next to this SKILL.md, and paths here are relative to that folder. It needs nothing from other skills or other folders, so don't go looking for them. Unless the user names another place, save everything it makes in `out/og-image-live/` under the current project.
+
 Output: a **5-second 2400×1260 MP4 and a looping GIF** of the project's share card. The title and the app window are on screen from the first frame, and the **product itself moves in a meaningful way**: the core loop of the app plays out in 2–4 beats, the way a user would see it on a good day.
 
 Example (Pulse, a project activity feed): `references/pulse-live.gif`, `references/pulse-live-frames.png`.
@@ -16,7 +18,7 @@ Example (Pulse, a project activity feed): `references/pulse-live.gif`, `referenc
 
 ## Rules
 
-1. **Real product, real behavior.** Animate only what the app actually does (items that really stream in, statuses that really change, charts that really update). Build the screen from the real layout, components, tokens and copy, same as a static OG card (see the `og-image` skill). No invented features, fake metrics, or effects the UI never shows.
+1. **Real product, real behavior.** Animate only what the app actually does (items that really stream in, statuses that really change, charts that really update). Build the screen from the real layout, components, tokens and copy, same as a static OG card (see `references/static-card.md`). No invented features, fake metrics, or effects the UI never shows.
 2. **Motion tells one story.** Pick the product's core loop and make the beats connect: the same people, ids and objects as the resting state, progressing ("in progress" → "done", "draft" → "published", "3 open" → "2 open"). Secondary visuals (grid, counter, chart, badge) react to the same beats.
 3. **Calm and legible.** 2–4 beats, ~1.2–1.4s apart, first beat at ~0.6–0.8s. Every beat ends in a readable state. Only animate `opacity`, `transform`, `grid-template-rows` (height push), `stroke-dashoffset` and background tint. One ease-out curve (`cubic-bezier(0.16, 1, 0.3, 1)`). No bounce, blur, zoom punches, typewriter text, confetti or camera moves.
 4. **Title and chrome never move.** The brand mark, title, window frame, sidebar and header stay static. Motion lives in the content area, and the most important beat happens where the eye already is (top of a list, center of a board).
@@ -81,7 +83,7 @@ Timing recipes:
 
 ### 1. Discover
 
-- The static OG card: component, render route, PNG. If there isn't one, build it first with the `og-image` skill; the live video must end on a state consistent with it.
+- The static OG card: component, render route, PNG. If there isn't one, build it first by following `references/static-card.md`; the live video must end on a state consistent with it.
 - The primary screen's real components, and **how the product updates in real life**: sockets or polling that prepend items, status transitions and their labels/colors, counters, charts, today markers.
 - Data shapes and vocabulary for the arriving items (ids, statuses, verbs, timestamps like "just now").
 
@@ -110,11 +112,11 @@ Continuity check: every arriving item references something already visible or pl
 ```bash
 node <this skill folder>/scripts/record.mjs \
   --url "http://localhost:<port>/og/<page>-live?loop=0" \
-  --out <app>/public/og-<page>-live \
+  --out out/og-image-live/og-<page>-live \
   --lead 0 --hold 200 --formats mp4,gif
 ```
 
-The script prints the timeline length; set `--hold` so `timeline + hold ≈ 5000`. Output: `<out>.mp4` (2400×1260, H.264, 30fps) and `<out>.gif` (1200px, palette-optimized, loops). Needs `ffmpeg` and a Playwright Chromium (resolved from the project, `PLAYWRIGHT_CORE`, or the npx cache; otherwise `npx -y playwright@latest install chromium`).
+The script prints the timeline length; set `--hold` so `timeline + hold ≈ 5000`. Output: `<out>.mp4` (2400×1260, H.264, 30fps) and `<out>.gif` (1200px, palette-optimized, loops). Needs `ffmpeg`. Playwright installs into this skill's `scripts/` folder on the first run, with its Chromium if none is found.
 
 Gotchas:
 

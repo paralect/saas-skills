@@ -2,7 +2,7 @@
 // category on the left and hover the cards in it, end back on All.
 //
 //   DEMO_URL=… DEMO_PROJECT=… DEMO_EMAIL=… DEMO_PASSWORD=… node <this skill folder>/scripts/record.mjs \
-//     --take videos/demos/run-modal.mjs --out out/social/run-modal
+//     --take out/product-demo/takes/run-modal.mjs --out out/product-demo/run-modal
 
 const BASE = process.env.DEMO_URL ?? "http://localhost:3002";
 const PROJECT = process.env.DEMO_PROJECT;

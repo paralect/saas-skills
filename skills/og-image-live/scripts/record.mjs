@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 // Record a CSS-animated share card (entrance or in-app live animation) frame by frame and encode MP4 + GIF (+ the final frame as PNG).
 //
-//   node record.mjs --url "http://localhost:3000/og/home-animated?loop=0" --out public/og-home
+//   node record.mjs --url "http://localhost:3000/og/home-animated?loop=0" --out out/og-image-live/og-home
 //
 // Writes <out>.mp4, <out>.gif and <out>.png (last frame, same as the static card).
 //
@@ -18,10 +18,11 @@
 // frame's time via the Web Animations API, so frames never drop and the result is identical on
 // every run. Needs playwright-core (+ Chromium) and ffmpeg on PATH.
 import { execFileSync } from 'node:child_process';
-import { existsSync, mkdtempSync, readdirSync, rmSync } from 'node:fs';
+import { existsSync, mkdirSync, mkdtempSync, rmSync } from 'node:fs';
 import { createRequire } from 'node:module';
-import { homedir, tmpdir } from 'node:os';
-import { join, resolve } from 'node:path';
+import { tmpdir } from 'node:os';
+import { dirname, join, resolve } from 'node:path';
+import { fileURLToPath } from 'node:url';
 
 const args = Object.fromEntries(
   process.argv
@@ -29,8 +30,8 @@ const args = Object.fromEntries(
     .reduce((pairs, token, i, all) => (token.startsWith('--') ? [...pairs, [token.slice(2), all[i + 1]]] : pairs), []),
 );
 
-if (!args.url || !args.out) {
-  console.error('Usage: node record.mjs --url <page?loop=0> --out <path/without-extension> [--fps 30] [--hold 1500]');
+if (!args.url) {
+  console.error('Usage: node record.mjs --url <page?loop=0> [--out out/og-image-live/og] [--fps 30] [--hold 1500]');
   process.exit(1);
 }
 
@@ -42,36 +43,30 @@ const hold = Number(args.hold ?? 1500);
 const lead = Number(args.lead ?? 200);
 const selector = args.selector ?? '[data-og-frame]';
 const formats = new Set((args.formats ?? 'mp4,gif,png').split(','));
-const out = resolve(args.out.replace(/\.(mp4|gif|png)$/, ''));
+const out = resolve((args.out ?? 'out/og-image-live/og').replace(/\.(mp4|gif|png)$/, ''));
+mkdirSync(dirname(out), { recursive: true });
+
+// Playwright lives in this skill's own folder: installed next to this script on the first run,
+// never looked up in the project, the npx cache or anywhere else.
+const HERE = dirname(fileURLToPath(import.meta.url));
 
 function loadPlaywright() {
-  const candidates = [];
-  if (process.env.PLAYWRIGHT_CORE) {
-    candidates.push(process.env.PLAYWRIGHT_CORE);
+  const path = join(HERE, "node_modules", "playwright");
+  if (!existsSync(path)) {
+    console.error("Installing Playwright into this skill's folder (first run)...");
+    execFileSync("npm", ["install", "--silent", "--no-audit", "--no-fund"], { cwd: HERE, stdio: ["ignore", 2, 2] });
   }
-  candidates.push(join(process.cwd(), 'node_modules', 'playwright-core'));
-  candidates.push(join(process.cwd(), 'node_modules', 'playwright'));
-  const npxCache = join(homedir(), '.npm', '_npx');
-  if (existsSync(npxCache)) {
-    for (const dir of readdirSync(npxCache)) {
-      candidates.push(join(npxCache, dir, 'node_modules', 'playwright-core'));
-    }
+  return createRequire(import.meta.url)(path);
+}
+
+// Downloads Playwright's Chromium the first time a launch can't find one.
+async function launchBrowser(chromium, options = {}) {
+  try {
+    return await chromium.launch(options);
+  } catch {
+    execFileSync(join(HERE, "node_modules", ".bin", "playwright"), ["install", "chromium"], { stdio: ["ignore", 2, 2] });
+    return chromium.launch(options);
   }
-  const require = createRequire(import.meta.url);
-  for (const path of candidates) {
-    if (!existsSync(path)) {
-      continue;
-    }
-    try {
-      const pw = require(path);
-      if (pw.chromium) {
-        return pw;
-      }
-    } catch {
-      // try the next one
-    }
-  }
-  throw new Error('playwright-core not found. Run `npx -y playwright@latest install chromium` and retry.');
 }
 
 try {
@@ -95,7 +90,7 @@ const DEV_OVERLAYS = [
 
 const frames = mkdtempSync(join(tmpdir(), 'og-anim-'));
 const { chromium } = loadPlaywright();
-const browser = await chromium.launch();
+const browser = await launchBrowser(chromium);
 
 try {
   const page = await browser.newPage({ viewport: { width, height }, deviceScaleFactor: scale });

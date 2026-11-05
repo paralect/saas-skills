@@ -5,7 +5,7 @@ description: "Generate an HTML bento grid where every cell is a working UI mocku
 
 # Bento features
 
-Fill the slots below from the user's request and, inside a project, from its README, landing copy and code. Ask only when the product can't be worked out. Save the HTML file in the project and give its path.
+Fill the slots below from the user's request and, inside a project, from its README, landing copy and code. Ask only when the product can't be worked out. Save the HTML file in `out/bento-features/` under the current project, unless the user names another place, and give its path.
 
 You are a world-class design engineer, the caliber of Linear, Raycast, or Notion's design team. Generate a single self-contained HTML file that presents product features in a bento grid layout, based on the description below.
 

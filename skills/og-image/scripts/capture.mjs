@@ -1,22 +1,22 @@
 #!/usr/bin/env node
 // Capture an Open Graph image from a running page.
 //
-//   node capture.mjs --url http://localhost:3000/og --out public/og.png
+//   node capture.mjs --url http://localhost:3000/og --out out/og-image/og.png
 //
-// Options (all optional except --url and --out):
+// Options (all optional except --url):
 //   --selector [data-og-frame]   element to capture (falls back to the viewport)
 //   --width 1200 --height 630    CSS size of the card
 //   --scale 2                    device pixel ratio (2 → 2400×1260)
 //   --wait 2500                  ms to wait after load for fonts, images, entrance animations
 //   --hide ".foo, .bar"          extra selectors to hide (dev overlays are hidden by default)
 //
-// Needs playwright-core + a Chromium build. Resolution order: the project's node_modules,
-// PLAYWRIGHT_CORE env var (path to the package), any copy cached by `npx`. If none is found,
-// run `npx -y playwright@latest install chromium` once and retry.
-import { existsSync, readdirSync } from 'node:fs';
+// Installs Playwright into this folder on the first run, and its Chromium when none is found.
+import { execFileSync } from 'node:child_process';
+import { existsSync } from 'node:fs';
 import { createRequire } from 'node:module';
-import { homedir } from 'node:os';
-import { join, resolve } from 'node:path';
+
+import { dirname, join, resolve } from 'node:path';
+import { fileURLToPath } from 'node:url';
 
 const args = Object.fromEntries(
   process.argv
@@ -24,8 +24,8 @@ const args = Object.fromEntries(
     .reduce((pairs, token, i, all) => (token.startsWith('--') ? [...pairs, [token.slice(2), all[i + 1]]] : pairs), []),
 );
 
-if (!args.url || !args.out) {
-  console.error('Usage: node capture.mjs --url <page> --out <file.png> [--selector ..] [--scale 2] [--wait 2500]');
+if (!args.url) {
+  console.error('Usage: node capture.mjs --url <page> [--out out/og-image/og.png] [--selector ..] [--scale 2] [--wait 2500]');
   process.exit(1);
 }
 
@@ -35,34 +35,27 @@ const scale = Number(args.scale ?? 2);
 const wait = Number(args.wait ?? 2500);
 const selector = args.selector ?? '[data-og-frame]';
 
+// Playwright lives in this skill's own folder: installed next to this script on the first run,
+// never looked up in the project, the npx cache or anywhere else.
+const HERE = dirname(fileURLToPath(import.meta.url));
+
 function loadPlaywright() {
-  const candidates = [];
-  if (process.env.PLAYWRIGHT_CORE) {
-    candidates.push(process.env.PLAYWRIGHT_CORE);
+  const path = join(HERE, "node_modules", "playwright");
+  if (!existsSync(path)) {
+    console.error("Installing Playwright into this skill's folder (first run)...");
+    execFileSync("npm", ["install", "--silent", "--no-audit", "--no-fund"], { cwd: HERE, stdio: ["ignore", 2, 2] });
   }
-  candidates.push(join(process.cwd(), 'node_modules', 'playwright-core'));
-  candidates.push(join(process.cwd(), 'node_modules', 'playwright'));
-  const npxCache = join(homedir(), '.npm', '_npx');
-  if (existsSync(npxCache)) {
-    for (const dir of readdirSync(npxCache)) {
-      candidates.push(join(npxCache, dir, 'node_modules', 'playwright-core'));
-    }
+  return createRequire(import.meta.url)(path);
+}
+
+// Downloads Playwright's Chromium the first time a launch can't find one.
+async function launchBrowser(chromium, options = {}) {
+  try {
+    return await chromium.launch(options);
+  } catch {
+    execFileSync(join(HERE, "node_modules", ".bin", "playwright"), ["install", "chromium"], { stdio: ["ignore", 2, 2] });
+    return chromium.launch(options);
   }
-  const require = createRequire(import.meta.url);
-  for (const path of candidates) {
-    if (!existsSync(path)) {
-      continue;
-    }
-    try {
-      const pw = require(path);
-      if (pw.chromium) {
-        return pw;
-      }
-    } catch {
-      // try the next one
-    }
-  }
-  throw new Error('playwright-core not found. Run `npx -y playwright@latest install chromium` and retry.');
 }
 
 // Dev-only overlays that must never end up in a share image.
@@ -78,7 +71,7 @@ const DEV_OVERLAYS = [
 ];
 
 const { chromium } = loadPlaywright();
-const browser = await chromium.launch();
+const browser = await launchBrowser(chromium);
 try {
   const page = await browser.newPage({
     viewport: { width, height },
@@ -91,7 +84,7 @@ try {
   await page.evaluate(() => document.fonts.ready);
   await page.waitForTimeout(wait);
 
-  const out = resolve(args.out);
+  const out = resolve(args.out ?? 'out/og-image/og.png');
   const frame = page.locator(selector);
   if ((await frame.count()) > 0) {
     await frame.first().screenshot({ path: out });

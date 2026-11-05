@@ -5,6 +5,8 @@ description: "Record a top-to-bottom scroll of any web page as a short MP4, the 
 
 # Website scroll
 
+Every file this skill uses ships in its own folder, next to this SKILL.md, and paths here are relative to that folder. It needs nothing from other skills or other folders, so don't go looking for them. Unless the user names another place, save everything it makes in `out/website-scroll/` under the current project.
+
 Output: a **6–18 second MP4** of a web page scrolled from the top to the bottom the way a reader does it: a flick of about a screen that coasts to a stop, a moment to look, another flick (1440×900 by default, encoded 1280 wide), plus `<out>.jpg`, its first frame, for a poster. Nothing is faked: the real page in a real browser; only the consent dialogs, cookie bars, popups and chat bubbles are taken out.
 
 ## How it works
@@ -21,10 +23,10 @@ The take rests at the top (1.2s), then scrolls in flicks: each one shoots off an
 ## Usage
 
 ```bash
-node <this skill folder>/scripts/scroll.mjs --url https://example.com/pricing --out out/scroll/pricing
+node <this skill folder>/scripts/scroll.mjs --url https://example.com/pricing --out out/website-scroll/pricing
 ```
 
-Writes `out/scroll/pricing.mp4` and `out/scroll/pricing.jpg`. Options:
+Writes `out/website-scroll/pricing.mp4` and `out/website-scroll/pricing.jpg`. Options:
 
 | Option                | Default   | What it does                                                                                  |
 | --------------------- | --------- | --------------------------------------------------------------------------------------------- |
@@ -41,12 +43,12 @@ Writes `out/scroll/pricing.mp4` and `out/scroll/pricing.jpg`. Options:
 | `--still`             | off       | One JPEG of the tidied page instead of a video, for a quick check.                            |
 | `--keep-frames`       | off       | Leave the captured frames next to the output.                                                 |
 
-Needs `playwright-core` (found in the project's `node_modules`, the npx cache, or `PLAYWRIGHT_CORE`) with Chrome or Chromium, and `ffmpeg` on PATH (`brew install ffmpeg`).
+Needs `ffmpeg` on PATH (`brew install ffmpeg`). Playwright installs into this skill's `scripts/` folder on the first run, with its Chromium if none is found; your own Chrome is used when you have one.
 
 ## Rules
 
 1. **Check the still first when the site is unfamiliar** (`--still`). If a banner is still in the picture, add its selector to `NOISE_SELECTORS` in the script or a phrase to `NOISE_TEXT`; don't hand-edit frames.
 2. **Public pages only, as a visitor sees them.** The recorder signs in to nothing and keeps no cookies; a page behind a login shows its login screen. For the running app behind sign-in, use the `video-demo` skill.
-3. **One page per video.** A launch post with three links gets three recordings, one per link, named after the page (`out/scroll/<slug>.mp4`).
+3. **One page per video.** A launch post with three links gets three recordings, one per link, named after the page (`out/website-scroll/<slug>.mp4`).
 4. **Don't fight the page's own motion.** Marquees, hero videos and scroll animations are part of the page and play in the recording; only overlays are removed.
 5. **Keep it short.** The defaults land most pages at 6–12 seconds. If a page is very long, let the time budget shorten the rests rather than raising `--max` far past 18s; a hover preview is not a tour.

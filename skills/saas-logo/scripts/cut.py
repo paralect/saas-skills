@@ -106,13 +106,13 @@ def trim(rgba: np.ndarray) -> np.ndarray:
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("render")
-    ap.add_argument("out")
+    ap.add_argument("out", nargs="?", help="folder; defaults to out/saas-logo/<name>")
     ap.add_argument("--name", default=None, help="file prefix; defaults to the render's name")
     args = ap.parse_args()
     render = pathlib.Path(args.render)
-    out = pathlib.Path(args.out)
-    out.mkdir(parents=True, exist_ok=True)
     name = args.name or render.stem
+    out = pathlib.Path(args.out or f"out/saas-logo/{name}")
+    out.mkdir(parents=True, exist_ok=True)
 
     rgb = np.array(Image.open(render).convert("RGB"))
     h, w = rgb.shape[:2]
