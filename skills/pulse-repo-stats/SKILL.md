@@ -7,7 +7,7 @@ description: "Build the Pulse engineering dashboard for a GitHub repo on this co
 
 Every file this skill uses ships in its own folder, next to this SKILL.md, and paths here are relative to that folder. It needs nothing from other skills or other folders, so don't go looking for them. Unless the user names another place, save everything it makes in `out/pulse-repo-stats/` under the current project.
 
-Reads the last 12 weeks of a GitHub repo and writes the same dashboard as paralect.ai/repo/vercel/next.js as one HTML file. It installs nothing. The numbers stay on this computer: the script talks only to api.github.com, and the page loads Tailwind and fonts from public CDNs and avatars from GitHub.
+Reads the last 12 weeks of a GitHub repo and writes the same dashboard as paralect.ai/repo/vercel/next.js as one HTML file, with a "What stands out" block under the charts. It installs nothing. The numbers stay on this computer: the script talks only to api.github.com, and the page loads Tailwind and fonts from public CDNs and avatars from GitHub.
 
 ## Steps
 
@@ -23,7 +23,7 @@ Reads the last 12 weeks of a GitHub repo and writes the same dashboard as parale
 
    Progress goes to stderr. It opens the file in the browser when done.
 
-4. **Report back.** Stdout has the file's path and the headline numbers. Give the user the path, then the two or three numbers that say the most about this team. If a number says "not enough data", say so: don't estimate it.
+4. **Report back.** Stdout has the file's path, the headline numbers and "What stands out": the same insights the page shows under its charts. Give the user the path, then the two or three insights that matter most, in your own words. Don't add findings the numbers don't support, and if a number says "not enough data", say so rather than estimating it.
 
 ## Options
 

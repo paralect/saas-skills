@@ -58,7 +58,7 @@ npx skills add paralect/saas-skills --all --global
 | Skill | What it does |
 | --- | --- |
 | [article-image](https://www.paralect.com/skills/article-image) | The image that runs with a blog post, in one of 8 house styles |
-| [pulse-repo-stats](https://www.paralect.com/skills/pulse-repo-stats) | A one-file HTML dashboard of how a GitHub repo ships: release weeks, review wait, time to merge, AI agent share |
+| [pulse-repo-stats](https://www.paralect.com/skills/pulse-repo-stats) | A one-file HTML dashboard of how a GitHub repo ships: release weeks, review wait, time to merge, AI agent share, and what stands out |
 
 ## Where the output goes
 
