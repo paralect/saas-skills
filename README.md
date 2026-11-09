@@ -41,6 +41,7 @@ npx skills add paralect/saas-skills --all --global
 | [bento-features](https://www.paralect.com/skills/bento-features) | A bento grid where every cell is a working UI mockup of one feature |
 | [low-res-mockup](https://www.paralect.com/skills/low-res-mockup) | A stripped-back HTML mockup of a screen, skeletons instead of text |
 | [saas-logo](https://www.paralect.com/skills/saas-logo) | A flat geometric logo mark, delivered as transparent PNGs of the mark and its app-icon tile |
+| [deslopify-ui](https://www.paralect.com/skills/deslopify-ui) | Finds and fixes the 21 patterns that make a page look AI-generated, in your own code, colors and fonts |
 
 ### Launch
 
