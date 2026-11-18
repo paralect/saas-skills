@@ -1,6 +1,6 @@
 # SaaS Skills
 
-Agent skills for shipping B2B SaaS: landing pages, dashboards, logos, share cards, demo videos and blog images. See the real output of each one at [paralect.com/skills](https://www.paralect.com/skills).
+Agent skills for shipping B2B SaaS: landing pages, dashboards, logos, share cards, demo videos, blog images and changelogs. See the real output of each one at [paralect.com/skills](https://www.paralect.com/skills).
 
 ## New: pulse-repo-stats
 
@@ -53,6 +53,7 @@ npx skills add paralect/saas-skills --all --global
 | [website-screenshot-reel](https://www.paralect.com/skills/website-screenshot-reel) | A GIF or MP4 slideshow of hero sections from a list of URLs |
 | [website-scroll](https://www.paralect.com/skills/website-scroll) | A short MP4 of any public page scrolling the way a reader does, popups out of the way |
 | [product-demo](https://www.paralect.com/skills/product-demo) | A ScreenStudio-style demo of the running app with a drawn cursor, as a square MP4 |
+| [write-changelog](https://www.paralect.com/skills/write-changelog) | The next release note from the commits since the last one, in the format of your past notes, with a cover drawn from your real interface |
 
 ### Content and reports
 
@@ -73,6 +74,7 @@ Everything a skill makes goes to `out/<skill-name>/` in your current project, un
 | og-image, og-image-animated, og-image-live, website-screenshot-reel, website-scroll, product-demo | Node. Playwright installs into the skill's own folder on first run, with its Chromium if none is found |
 | og-image-animated, og-image-live, website-screenshot-reel, website-scroll, product-demo | `ffmpeg` |
 | pulse-repo-stats | Node 18+ and `gh auth login` or `GH_TOKEN`. Data stays on your computer |
+| write-changelog | Node for the cover capture (Playwright installs into the skill's own folder). A CDN is optional: `CDN_*` variables for any S3-compatible bucket, otherwise images go in your app's `public/` folder |
 
 ## Run them without a terminal
 
