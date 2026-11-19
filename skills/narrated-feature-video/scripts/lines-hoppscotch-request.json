@@ -1,0 +1,5 @@
+[[1.1, "Hoppscotch tests any A P I right in the browser. Paste an endpoint."],
+ [6.5, "Hit Send, and the status, time and size come back with the response."],
+ [12.0, "The J S O N is formatted, so even a long response is easy to scan."],
+ [18.7, "Generate Code turns the same request into a snippet."],
+ [23.3, "Pick a language, like Python, and copy it into your app."]]

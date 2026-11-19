@@ -54,6 +54,7 @@ npx skills add paralect/saas-skills --all --global
 | [website-scroll](https://www.paralect.com/skills/website-scroll) | A short MP4 of any public page scrolling the way a reader does, popups out of the way |
 | [product-demo](https://www.paralect.com/skills/product-demo) | A ScreenStudio-style demo of the running app with a drawn cursor, as a square MP4 |
 | [write-changelog](https://www.paralect.com/skills/write-changelog) | The next release note from the commits since the last one, in the format of your past notes, with a cover drawn from your real interface |
+| [narrated-feature-video](https://www.paralect.com/skills/narrated-feature-video) | A 25 to 60 second video of each new feature being used in your app, with a calm voice saying what every step does |
 
 ### Content and reports
 
@@ -74,6 +75,7 @@ Everything a skill makes goes to `out/<skill-name>/` in your current project, un
 | og-image, og-image-animated, og-image-live, website-screenshot-reel, website-scroll, product-demo | Node. Playwright installs into the skill's own folder on first run, with its Chromium if none is found |
 | og-image-animated, og-image-live, website-screenshot-reel, website-scroll, product-demo | `ffmpeg` |
 | pulse-repo-stats | Node 18+ and `gh auth login` or `GH_TOKEN`. Data stays on your computer |
+| narrated-feature-video | Node, `ffmpeg`, Google Chrome and Python 3.10 to 3.12. The voice model (about 350 MB) downloads on the first run |
 | write-changelog | Node for the cover capture (Playwright installs into the skill's own folder). A CDN is optional: `CDN_*` variables for any S3-compatible bucket, otherwise images go in your app's `public/` folder |
 
 ## Run them without a terminal
